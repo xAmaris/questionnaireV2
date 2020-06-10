@@ -1,1 +1,23 @@
-<p>survey-template-list works!</p>
+<app-dashboard-bar
+  [groupTitle]="groupTitle"
+  [buttonDets]="buttonDets"
+  (buttonClick)="redirectToNew()"
+></app-dashboard-bar>
+<app-dashboard-list
+  [itemArr]="surveys$ | async"
+  [emptyListInfo]="emptyListInfo"
+>
+  <ng-template let-survey>
+    <app-dashboard-tile [itemData]="survey" (tileClick)="openCreator(survey)">
+      <!-- <app-survey-tile [survey]="changeSurveyToModel(item)"></app-survey-tile> -->
+
+      <!-- <div class="title">{{ survey.title }}</div>
+      <div class="date">{{ survey.created_date }}</div>
+      <div class="time">{{ survey.created_time }}</div> -->
+    </app-dashboard-tile>
+
+    <button mat-icon-button (click)="openConfirmDeleteDialog(survey.id)">
+      <fa-icon [icon]="['fas', 'times']"></fa-icon>
+    </button>
+  </ng-template>
+</app-dashboard-list>

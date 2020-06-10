@@ -5,6 +5,7 @@ import { DashboardBarComponent } from './dashboard-bar.component';
 
 @NgModule({
   declarations: [DashboardBarComponent],
-  imports: [CommonModule, FontAwesomeModule]
+  imports: [CommonModule, FontAwesomeModule],
+  exports: [DashboardBarComponent]
 })
 export class DashboardBarModule {}

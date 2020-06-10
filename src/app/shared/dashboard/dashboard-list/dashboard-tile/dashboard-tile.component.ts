@@ -14,7 +14,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardTileComponent implements OnInit {
-  @Input() item_tile: any;
+  @Input() itemData: any;
 
   @Output() tileClick = new EventEmitter<any>();
   constructor() {}

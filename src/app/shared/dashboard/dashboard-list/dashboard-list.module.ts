@@ -2,9 +2,11 @@ import { LoadingOverlayModule } from './../../loading-overlay/loading-overlay.mo
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardListComponent } from './dashboard-list.component';
+import { DashboardTileComponent } from './dashboard-tile/dashboard-tile.component';
 
 @NgModule({
-  declarations: [DashboardListComponent],
-  imports: [CommonModule, LoadingOverlayModule]
+  declarations: [DashboardListComponent, DashboardTileComponent],
+  imports: [CommonModule, LoadingOverlayModule],
+  exports: [DashboardListComponent]
 })
 export class DashboardListModule {}
