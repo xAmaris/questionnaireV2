@@ -9,7 +9,7 @@ import { TemplateSurvey } from 'src/app/models/survey/surveys/survey-template.mo
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SurveyService } from 'src/app/services/survey.service';
-import { first } from 'rxjs/operators';
+import { first, switchMap, flatMap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
 import { DeleteTemplateDialog } from 'src/app/models/dialog/delete-template-dialog.model';
 
@@ -29,7 +29,7 @@ export class SurveyTemplateListComponent implements OnInit, OnDestroy {
   get surveys(): Observable<TemplateSurvey[]> {
     return this._surveys.asObservable();
   }
-  getAllSurveysSub = new Subscription();
+  // getAllSurveysSub = new Subscription();
 
   constructor(
     private surveyService: SurveyService,
@@ -52,7 +52,6 @@ export class SurveyTemplateListComponent implements OnInit, OnDestroy {
       this.router.navigateByUrl(string);
     });
   }
-
   openCreator(survey: TemplateSurvey): void {
     this.surveyService.isCreatorLoading(true);
     this.router.navigateByUrl('/app/admin/survey/create/' + survey.id);
@@ -61,11 +60,11 @@ export class SurveyTemplateListComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/app/admin/survey/result/' + survey.id);
   }
   deleteSurvey(id: number): void {
-    this.surveyService.deleteSurvey(id).subscribe(() => {
-      this.surveyService.saveSurveysFromApi();
-    });
+    const obs = this.surveyService
+      .deleteSurvey(id)
+      .pipe(flatMap(() => this.getAllSurveysObs()));
+    this.subscribeToAllSurveyResult(obs);
   }
-
   openConfirmDeleteDialog(id: number): void {
     this.openSurveyDialog().pipe(first()).subscribe((res: boolean) => {
       if (res) {
@@ -74,26 +73,29 @@ export class SurveyTemplateListComponent implements OnInit, OnDestroy {
     });
   }
 
-  openSurveyDialog(): Observable<boolean> {
+  private openSurveyDialog(): Observable<boolean> {
     const dialogRef: MatDialogRef<ConfirmDialogComponent> = this.dialog.open(
       ConfirmDialogComponent,
       { data: new DeleteTemplateDialog() }
     );
     return dialogRef.afterClosed();
   }
-
   private getAllSurveys(): void {
-    this.surveyService.saveSurveysFromApi();
-    this.getAllSurveysSub = this.surveyService.savedSurveys.subscribe(
-      (data: TemplateSurvey[]) => {
-        if (data) {
-          this._surveys.next(data);
-        }
-      }
-    );
+    this.subscribeToAllSurveyResult(this.getAllSurveysObs());
   }
 
-  ngOnDestroy(): void {
-    this.getAllSurveysSub.unsubscribe();
+  private getAllSurveysObs(): Observable<TemplateSurvey[]> {
+    return this.surveyService.getAllSurveys();
   }
+  private subscribeToAllSurveyResult(
+    allSurvey$: Observable<TemplateSurvey[]>
+  ): void {
+    allSurvey$.subscribe((data: TemplateSurvey[]) => {
+      if (data) {
+        this._surveys.next(data);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {}
 }

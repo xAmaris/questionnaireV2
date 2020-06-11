@@ -1,1 +1,13 @@
-<p>survey-sent-list works!</p>
+<app-dashboard-bar [groupTitle]="groupTitle"></app-dashboard-bar>
+<app-dashboard-list [itemArr]="surveys | async" [emptyListInfo]="emptyListInfo">
+  <ng-template let-survey>
+    <app-dashboard-tile [itemData]="survey" (tileClick)="openPreview(survey)">
+      <div class="title">{{ survey.title }}</div>
+      <div class="date">{{ survey.createdAt | createdDate }}</div>
+      <div class="time">{{ survey.createdAt | createdTime }}</div>
+    </app-dashboard-tile>
+    <button mat-icon-button (click)="openResult(survey)">
+      <fa-icon [icon]="['fas', 'chart-bar']"></fa-icon>
+    </button>
+  </ng-template>
+</app-dashboard-list>

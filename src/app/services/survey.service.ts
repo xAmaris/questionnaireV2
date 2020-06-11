@@ -13,8 +13,6 @@ export class SurveyService {
   openingCreatorLoader: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false
   );
-  savedSurveys = new Subject<TemplateSurvey[]>();
-  savedSentSurveys = new Subject<any[]>();
 
   controlArray: string[];
 
@@ -94,16 +92,6 @@ export class SurveyService {
     );
   }
 
-  saveSurveysFromApi(): void {
-    this.getAllSurveys().subscribe(data => {
-      this.savedSurveys.next(data);
-    });
-  }
-  saveSentSurveysFromApi(): void {
-    this.getAllSentSurveys().subscribe(data => {
-      this.savedSentSurveys.next(data);
-    });
-  }
   isCreatorLoading(x: boolean): void {
     this.openingCreatorLoader.next(x);
   }
