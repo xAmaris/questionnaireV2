@@ -25,6 +25,14 @@ const routes: Routes = [
         canLoad: [AuthGuard]
       },
       {
+        path: 'users',
+        loadChildren: () =>
+          import('src/app/views/users-views/users-list/users-list.module').then(
+            m => m.UsersListModule
+          ),
+        canLoad: [AuthGuard]
+      },
+      {
         path: 'survey',
         loadChildren: () =>
           import('src/app/views/survey-views/base-survey/base-survey.module').then(

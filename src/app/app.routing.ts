@@ -11,16 +11,19 @@ const routes: Routes = [
   {
     path: 'app',
     loadChildren: () =>
-      import('./core/main-view/main-view.module').then(m => m.MainViewModule),
+      import('./core/views/main-view/main-view.module').then(
+        m => m.MainViewModule
+      ),
     canLoad: [AuthGuard]
-  }
-  // {
-  //   path: 'survey',
-  //   loadChildren:
-  //     './shared/survey-container/survey-container.module#SurveyContainerModule'
-  // },
-
-  // { path: '**', redirectTo: '/auth/login' }
+  },
+  {
+    path: 'survey',
+    loadChildren: () =>
+      import('src/app/views/survey-views/base-survey/base-survey.module').then(
+        m => m.BaseSurveyModule
+      )
+  },
+  { path: '**', redirectTo: '/auth/login' }
 ];
 
 @NgModule({

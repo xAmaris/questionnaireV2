@@ -21,15 +21,27 @@ const routes: Routes = [
         data: {
           expectedRole: 'careerOffice'
         }
+      },
+      {
+        path: 'student',
+        loadChildren: () =>
+          import('./../student-view/student-view.module').then(
+            m => m.StudentViewModule
+          ),
+        canLoad: [AuthGuard],
+        canActivate: [RoleGuard],
+        data: {
+          expectedRole: 'student'
+        }
+      },
+      {
+        path: 'settings',
+        loadChildren: () =>
+          import('./../settings-view/settings-view.module').then(
+            m => m.SettingsViewModule
+          ),
+        canLoad: [AuthGuard]
       }
-      // {
-      //   path: 'student',
-      //   loadChildren: './student-view/student-view.module#StudentViewModule'
-      // },
-      // {
-      //   path: 'settings',
-      //   loadChildren: './settings/settings.module#SettingsModule'
-      // }
     ]
   }
 ];
