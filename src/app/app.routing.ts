@@ -13,14 +13,14 @@ const routes: Routes = [
     loadChildren: () =>
       import('./core/main-view/main-view.module').then(m => m.MainViewModule),
     canLoad: [AuthGuard]
-  },
+  }
   // {
   //   path: 'survey',
   //   loadChildren:
   //     './shared/survey-container/survey-container.module#SurveyContainerModule'
   // },
 
-  { path: '**', redirectTo: '/auth/login' }
+  // { path: '**', redirectTo: '/auth/login' }
 ];
 
 @NgModule({
