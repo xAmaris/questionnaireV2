@@ -1,3 +1,5 @@
+import { InputControlModule } from 'src/app/shared/form-controls/input-control/input-control.module';
+import { BaseAuthModule } from './../base-auth/base-auth.module';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,6 +12,7 @@ import { RegisterComponent } from './register.component';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatInputModule } from '@angular/material/input';
+import { ValueChangeModule } from 'src/app/shared/pipes/value-change/value-change.module';
 
 export const routes: Routes = [{ path: '', component: RegisterComponent }];
 
@@ -24,7 +27,10 @@ export const routes: Routes = [{ path: '', component: RegisterComponent }];
     FontAwesomeModule,
     MatTooltipModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    BaseAuthModule,
+    InputControlModule,
+    ValueChangeModule
   ],
   declarations: [RegisterComponent],
   exports: [RegisterComponent]

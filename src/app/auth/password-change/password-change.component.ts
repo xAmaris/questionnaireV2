@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -10,6 +10,8 @@ import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { SharedService } from '../../services/shared.service';
 import { AccountService } from 'src/app/services/account.service';
+import { passwordPattern } from 'src/app/shared/other/password-pattern';
+import { matchPassword } from 'src/app/shared/other/math-password.validator';
 
 @Component({
   selector: 'app-password-change',
@@ -17,46 +19,38 @@ import { AccountService } from 'src/app/services/account.service';
   styleUrls: ['./password-change.component.scss']
 })
 export class PasswordChangeComponent implements OnInit, OnDestroy {
-  // declare form
+  passwordPattern = passwordPattern;
+
   passwordForm: FormGroup;
-  oldPassword: AbstractControl;
-  newPassword: AbstractControl;
-  confirmPassword: AbstractControl;
-
-  // loader
+  header = 'Zmień hasło';
   loading = false;
-
-  // error handlers
-  oldPasswordErrorStr: string;
-  newPasswordErrorStr: string;
-  confirmPasswordErrorStr: string;
 
   loginError = false;
   loginErrorMessage = '';
 
-  // tslint:disable-next-line:max-line-length
-  passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}/;
+  confirmPasswordErrorStr: string;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private accountService: AccountService,
     private sharedService: SharedService,
-    private titleService: Title
+    private titleService: Title,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     this.titleService.setTitle('Zmiana hasła');
     this.declareForm();
     this.showBack(true);
-    this.showAdminMenu(true);
+    this.setShowAdminMenu(true);
     this.showProfile(true);
     this.setProfile();
   }
   showBack(x: boolean): void {
     this.sharedService.setShowButton(x);
   }
-  showAdminMenu(x: boolean): void {
+  setShowAdminMenu(x: boolean): void {
     this.sharedService.setShowAdminMenu(x);
   }
   showProfile(x: boolean): void {
@@ -67,13 +61,12 @@ export class PasswordChangeComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     this.showBack(false);
-    // this.showAdminMenu(false);
     this.showProfile(false);
   }
   declareForm() {
     // form declaration
     this.passwordForm = this.fb.group({
-      oldPassword: ['', Validators.compose([Validators.required])],
+      oldPassword: ['', Validators.required],
       newPassword: [
         '',
         Validators.compose([
@@ -83,27 +76,23 @@ export class PasswordChangeComponent implements OnInit, OnDestroy {
       ],
       confirmPassword: [
         '',
-        Validators.compose([Validators.required, this.matchPassword])
+        Validators.compose([Validators.required, matchPassword])
       ]
     });
-
-    // connecting controls with form inputs
-    this.oldPassword = this.passwordForm.controls.oldPassword;
-    this.newPassword = this.passwordForm.controls.newPassword;
-    this.confirmPassword = this.passwordForm.controls.confirmPassword;
   }
   onSubmit(form: any): void {
     if (!form.valid) {
       // showing possible errors
-      this.oldPassword.markAsTouched();
-      this.newPassword.markAsTouched();
+      this.passwordForm.get('oldPassword').markAsTouched();
+      this.passwordForm.get('newPassword').markAsTouched();
     } else {
       this.loading = true;
+      this.cd.markForCheck();
+      const formValue = this.passwordForm.value;
       this.accountService
-        // login with credentials from form
-        .changePassword(this.oldPassword.value, this.newPassword.value)
+        .changePassword(formValue.oldPassword, formValue.newPassword)
         .subscribe(
-          data => {
+          () => {
             this.accountService.isLoggedNext(false);
             this.router.navigateByUrl('auth/login');
           },
@@ -113,67 +102,13 @@ export class PasswordChangeComponent implements OnInit, OnDestroy {
             this.loginErrorMessage = this.accountService.setLoginErrorString(
               error.status
             );
+            this.cd.markForCheck();
+          },
+          () => {
             this.loading = false;
+            this.cd.markForCheck();
           }
         );
-    }
-  }
-
-  inputError(control: AbstractControl): boolean {
-    // // get error message and control name in string
-    // const errorObj = this.sharedService.inputError(control);
-
-    // // assign error to input
-    // if (errorObj) {
-    //   switch (errorObj.controlName) {
-    //     case 'old password':
-    //       this.oldPasswordErrorStr = errorObj.errorStr;
-    //       break;
-    //     case 'new password':
-    //       this.newPasswordErrorStr = errorObj.errorStr;
-    //       break;
-    //   }
-    //   return true;
-    // }
-    return true;
-  }
-
-  onFocus(control: AbstractControl): void {
-    // hide possible errors
-    // if (control.touched) {
-    control.markAsUntouched();
-    // }
-    this.loginError = false;
-  }
-
-  onBlur(control: AbstractControl): void {
-    // hide possible errors
-    if (control.dirty === false) {
-      control.markAsUntouched();
-      this.loginError = false;
-    }
-  }
-
-  matchPassword(control: AbstractControl): { [s: string]: boolean } {
-    // check if inputs have same values
-    if (control.parent !== undefined) {
-      const password = control.parent.get('newPassword').value;
-      const passwordConfirm = control.parent.get('confirmPassword').value;
-      if (password !== passwordConfirm) {
-        return { noMatch: true };
-      }
-    }
-  }
-
-  passwordNoMatch(): boolean {
-    /*show error while passwords do not match*/
-    if (this.confirmPassword.errors) {
-      if (this.confirmPassword.errors.noMatch === undefined) {
-        this.confirmPasswordErrorStr = 'Passwords do not match';
-        return true;
-      }
-    } else {
-      return false;
     }
   }
 }

@@ -1,43 +1,33 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import {
-  AbstractControl,
-  FormBuilder,
-  FormGroup,
-  NgForm,
-  Validators
-} from '@angular/forms';
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef
+} from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { SharedService } from '../../services/shared.service';
 import { AccountService } from 'src/app/services/account.service';
 import { Student } from 'src/app/models/user/student.model';
 import { Admin } from 'src/app/models/user/admin.model';
+import { passwordPattern } from 'src/app/shared/other/password-pattern';
+import { emailPattern } from 'src/app/shared/other/email-pattern';
+import { matchPassword } from 'src/app/shared/other/math-password.validator';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RegisterComponent implements OnInit, OnDestroy {
+export class RegisterComponent implements OnInit {
+  header = 'Zarejestruj się';
   // declare form
   regForm: FormGroup;
-  name: AbstractControl;
-  lastName: AbstractControl;
-  email: AbstractControl;
-  password: AbstractControl;
-  passwordConfirm: AbstractControl;
-  profileName: AbstractControl;
-  albumID: AbstractControl;
-  phoneNum: AbstractControl;
 
   // error handlers
-  nameErrorStr: string;
-  lastNameErrorStr: string;
-  emailErrorStr: string;
-  passwordErrorStr: string;
   passwordConfirmErrorStr: string;
-  albumIDErrorStr: string;
-  phoneNumErrorStr: string;
   registrationError = false;
   registrationErrorMessage: string[];
 
@@ -52,9 +42,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
     { value: 'Admin', icon: 'briefcase', message: 'Admin' }
   ];
 
-  // tslint:disable-next-line:max-line-length
-  emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}/;
+  emailPattern = emailPattern;
+  passwordPattern = passwordPattern;
   namePattern = /^([a-zA-ZąęćłóśźżĄĘĆŁÓŚŹŻ\\']){0,}$/;
   surnamePattern = /^([a-zA-ZąęćłóśźżĄĘĆŁÓŚŹŻ]+[\s\-\\'])*[a-zA-ZąęćłóśźżĄĘĆŁÓŚŹŻ]+$/;
 
@@ -62,14 +51,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private router: Router,
     private accountService: AccountService,
-    private sharedService: SharedService,
-    private titleService: Title
+    private titleService: Title,
+    private cd: ChangeDetectorRef
   ) {}
 
-  ngOnDestroy() {
-    // this.sharedService.deleteControlArray();
-  }
-  ngOnInit() {
+  ngOnInit(): void {
     this.titleService.setTitle('Rejestracja');
     // form declaration
     this.regForm = this.fb.group({
@@ -103,195 +89,103 @@ export class RegisterComponent implements OnInit, OnDestroy {
       ],
       passwordConfirm: [
         '',
-        Validators.compose([Validators.required, this.matchPassword])
+        Validators.compose([Validators.required, matchPassword])
       ],
       profileName: ['Student', Validators.required],
       albumID: ['', Validators.required],
       phoneNum: ['', Validators.required]
     });
 
-    // connecting controls with form inputs
-    this.name = this.regForm.controls.name;
-    this.lastName = this.regForm.controls.lastName;
-    this.email = this.regForm.controls.email;
-    this.password = this.regForm.controls.password;
-    this.passwordConfirm = this.regForm.controls.passwordConfirm;
-    this.profileName = this.regForm.controls.profileName;
-    this.albumID = this.regForm.controls.albumID;
-    this.phoneNum = this.regForm.controls.phoneNum;
     this.hide(this.defaultProfile);
   }
 
-  hide(profile) {
+  hide(profile: string): void {
     this.setAllAsUntouched();
     if (profile === 'Admin') {
-      this.albumID.clearValidators();
-      this.albumID.updateValueAndValidity();
+      this.regForm.get('albumID').clearValidators();
+      this.regForm.get('albumID').updateValueAndValidity();
     }
   }
-  show(profile) {
+  show(profile: string): void {
     if (profile === 'Student') {
-      this.albumID.setValidators([Validators.required]);
-      this.albumID.updateValueAndValidity();
+      this.regForm.get('albumID').setValidators([Validators.required]);
+      this.regForm.get('albumID').updateValueAndValidity();
     }
   }
 
-  onSubmit(form: any): void {
-    console.log(this.profileName.value);
-
-    if (!form.valid) {
+  onSubmit(): void {
+    if (!this.regForm.valid) {
       // showing possible errors
-      this.setAllAsTouched();
-      console.log(this.email);
+      this.regForm.markAllAsTouched();
     } else {
       this.loading = true;
+      this.cd.markForCheck();
       this.createUser();
-      console.log(this.user);
-      // create new user
-      console.log(this.profileName.value);
-      switch (this.profileName.value) {
+      switch (this.regForm.value.profileName) {
         case 'Student':
-          this.accountService.createStudent(this.user).subscribe(
-            data => {
-              this.router.navigateByUrl('/auth/login');
-            },
-            error => {
-              this.loading = false;
-              this.registrationError = true;
-              // set error message from api to loginErrorMessage
-              console.log(error.error);
-              this.registrationErrorMessage = error;
-            }
+          this.subscribeToCreatingNewUser(
+            this.accountService.createStudent(this.user)
           );
           break;
         case 'Admin':
-          this.accountService.createNewAdmin(this.user).subscribe(
-            data => {
-              this.router.navigateByUrl('/auth/login');
-            },
-            error => {
-              this.loading = false;
-              this.registrationError = true;
-              // set error message from api to loginErrorMessage
-              this.registrationErrorMessage = error.error;
-            }
+          this.subscribeToCreatingNewUser(
+            this.accountService.createNewAdmin(this.user)
           );
           break;
       }
     }
   }
 
+  subscribeToCreatingNewUser(obs: Observable<any>): void {
+    obs.subscribe(
+      () => {
+        this.router.navigateByUrl('/auth/login');
+      },
+      error => {
+        this.registrationError = true;
+        // set error message from api to loginErrorMessage
+        this.registrationErrorMessage = error.error;
+        this.cd.markForCheck();
+      },
+      () => {
+        this.loading = false;
+        this.cd.markForCheck();
+      }
+    );
+  }
+
   createUser(): void {
-    switch (this.profileName.value) {
+    const regValue = this.regForm.value;
+    const profileName = regValue.profileName;
+    const albumId = regValue.albumId;
+    switch (profileName) {
       case 'Student':
         this.user = new Student();
-        (this.user as Student).albumID = this.albumID.value;
+        (this.user as Student).albumID = albumId;
         break;
       case 'Admin':
         this.user = new Admin();
     }
-    this.user.firstName = this.name.value;
-    this.user.lastName = this.lastName.value;
-    this.user.email = this.email.value;
-    this.user.password = this.password.value;
-    this.user.profileName = this.profileName.value;
-    const phoneNumString: string = this.phoneNum.value;
+    this.user.firstName = regValue.name;
+    this.user.lastName = regValue.lastName;
+    this.user.email = regValue.email;
+    this.user.password = regValue.password;
+    this.user.profileName = profileName;
+    const phoneNumString: string = regValue.phoneNum;
     this.user.phoneNum = phoneNumString.startsWith('+')
       ? phoneNumString
       : '+48' + phoneNumString;
   }
 
-  setAllAsTouched(): void {
-    this.name.markAsTouched();
-    this.lastName.markAsTouched();
-    this.email.markAsTouched();
-    this.password.markAsTouched();
-    this.passwordConfirm.markAsTouched();
-    this.albumID.markAsTouched();
-    this.phoneNum.markAsTouched();
-  }
   setAllAsUntouched(): void {
-    this.name.markAsUntouched();
-    this.lastName.markAsUntouched();
-    this.email.markAsUntouched();
-    this.password.markAsUntouched();
-    this.passwordConfirm.markAsUntouched();
-    this.albumID.markAsUntouched();
-    this.phoneNum.markAsUntouched();
-  }
-
-  onFocus(control: AbstractControl): void {
-    // hide possible errors
-    // if (control.touched) {
-    control.markAsUntouched();
-    // }
-    this.registrationError = false;
-  }
-
-  onBlur(control: AbstractControl): void {
-    // hide possible errors
-    if (control.dirty === false) {
-      control.markAsUntouched();
-      this.registrationError = false;
-    }
+    Object.keys(this.regForm.controls).forEach(name => {
+      this.regForm.get(name).markAsUntouched();
+    });
   }
 
   clearPasswordConfirm(): void {
     // clear confirm password input after changing password input
-    this.passwordConfirm.setValue('');
-    this.passwordConfirm.markAsUntouched();
-  }
-
-  matchPassword(control: AbstractControl): { [s: string]: boolean } {
-    // check if inputs have same values
-    if (control.parent !== undefined) {
-      const password = control.parent.get('password').value;
-      const passwordConfirm = control.parent.get('passwordConfirm').value;
-      if (password !== passwordConfirm) {
-        return { noMatch: true };
-      }
-    }
-  }
-
-  inputError(control: AbstractControl): boolean {
-    // // get error message and control name in string
-    // const errorObj = this.sharedService.inputError(control);
-
-    // // assign error to input
-    // if (errorObj) {
-    //   switch (errorObj.controlName) {
-    //     case 'name':
-    //       this.nameErrorStr = errorObj.errorStr;
-    //       break;
-    //     case 'last name':
-    //       this.lastNameErrorStr = errorObj.errorStr;
-    //       break;
-    //     case 'email':
-    //       this.emailErrorStr = errorObj.errorStr;
-    //       break;
-    //     case 'password':
-    //       this.passwordErrorStr = errorObj.errorStr;
-    //       break;
-    //     case 'albumID':
-    //       this.albumIDErrorStr = errorObj.errorStr;
-    //       break;
-    //     case 'phone number':
-    //       this.phoneNumErrorStr = errorObj.errorStr;
-    //       break;
-    //   }
-    //   return true;
-    // }
-    return true;
-  }
-
-  passwordNoMatch(): boolean {
-    if (this.passwordConfirm.errors) {
-      if (this.passwordConfirm.errors.noMatch === undefined) {
-        this.passwordConfirmErrorStr = 'Passwords do not match';
-        return true;
-      }
-    } else {
-      return false;
-    }
+    this.regForm.get('passwordConfirm').setValue('');
+    this.regForm.get('passwordConfirm').markAsUntouched();
   }
 }

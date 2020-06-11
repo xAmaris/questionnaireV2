@@ -1,4 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef
+} from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -8,7 +13,7 @@ import {
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { AccountService } from '../../services/account.service';
-import { SharedService } from 'src/app/services/shared.service';
+import { emailPattern } from 'src/app/shared/other/email-pattern';
 
 @Component({
   selector: 'app-password-recovery',
@@ -17,7 +22,7 @@ import { SharedService } from 'src/app/services/shared.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PasswordRecoveryComponent implements OnInit {
-  // loader
+  header = 'Zmień hasło';
   loading = false;
 
   // string mail from login component
@@ -27,15 +32,14 @@ export class PasswordRecoveryComponent implements OnInit {
   passForm: FormGroup;
   email: AbstractControl;
   emailErrorStr: string;
-  // tslint:disable-next-line:max-line-length
-  emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  emailPattern = emailPattern;
 
   constructor(
     private fb: FormBuilder,
     private accountService: AccountService,
-    private sharedService: SharedService,
     private router: Router,
-    private titleService: Title
+    private titleService: Title,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -60,29 +64,16 @@ export class PasswordRecoveryComponent implements OnInit {
 
   onSubmit(): void {
     this.loading = true;
+    this.cd.markForCheck();
     this.accountService.sendRestorePasswordEmail(this.email.value).subscribe(
       () => {
         this.router.navigateByUrl('auth/login');
       },
+      () => {},
       () => {
         this.loading = false;
+        this.cd.markForCheck();
       }
     );
-  }
-
-  inputError(control: AbstractControl): boolean {
-    // // get error message and control name in string
-    // const errorObj = this.sharedService.inputError(control);
-
-    // // assign error to input
-    // if (errorObj) {
-    //   switch (errorObj.controlName) {
-    //     case 'email':
-    //       this.emailErrorStr = errorObj.errorStr;
-    //       break;
-    //   }
-    //   return true;
-    // }
-    return true;
   }
 }

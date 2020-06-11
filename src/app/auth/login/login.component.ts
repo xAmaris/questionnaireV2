@@ -5,16 +5,12 @@ import {
   ChangeDetectorRef,
   ChangeDetectionStrategy
 } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormGroup,
-  Validators
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { SharedService } from '../../services/shared.service';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { AccountService } from 'src/app/services/account.service';
+import { emailPattern } from 'src/app/shared/other/email-pattern';
 
 @Component({
   selector: 'app-login',
@@ -23,23 +19,15 @@ import { AccountService } from 'src/app/services/account.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  // declare form
+  emailPattern = emailPattern;
+  header = 'Zaloguj się';
   logForm: FormGroup;
-  email: AbstractControl;
-  password: AbstractControl;
 
-  // booleans
   loading = false;
   recoveryRoute = false;
 
-  // error handlers
-  emailErrorStr: string;
-  passwordErrorStr: string;
   loginError = false;
   loginErrorMessage = '';
-
-  // tslint:disable-next-line:max-line-length
-  emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
   constructor(
     private fb: FormBuilder,
@@ -66,74 +54,58 @@ export class LoginComponent implements OnInit, OnDestroy {
       ],
       password: ['', Validators.required]
     });
-
-    // connecting controls with form inputs
-    this.email = this.logForm.controls.email;
-    this.password = this.logForm.controls.password;
+    this.cd.markForCheck();
   }
 
   onSubmit(): void {
     if (!this.logForm.valid) {
       // showing possible errors
-      this.email.markAsTouched();
-      this.password.markAsTouched();
+      this.logForm.get('email').markAsTouched();
+      this.logForm.get('password').markAsTouched();
     } else {
       this.loading = true;
       this.cd.markForCheck();
-      this.authenticationService
-        // login with credentials from form
-        .login(this.email.value, this.password.value)
-        .subscribe(
-          data => {
-            this.accountService.isLoggedNext(true);
-            // if login is successful, redirect to app
-            this.routeSwitch(data.role);
-          },
-          error => {
-            // set error message from api to loginErrorMessage
-            this.loginError = true;
-            this.loginErrorMessage = this.accountService.setLoginErrorString(
-              error.status
-            );
-          },
-          () => {
-            this.loading = false;
-            this.cd.markForCheck();
-          }
-        );
+      this.login();
     }
   }
-  routeSwitch(role) {
-    this.sharedService.routeSwitch(role);
+  login(): void {
+    const formValue = this.logForm.value;
+    this.authenticationService
+      // login with credentials from form
+      .login(formValue.email, formValue.password)
+      .subscribe(
+        data => {
+          this.accountService.isLoggedNext(true);
+          // if login is successful, redirect to app
+          this.routeSwitch(data.role);
+        },
+        error => {
+          // set error message from api to loginErrorMessage
+          this.loginError = true;
+          this.loginErrorMessage = this.accountService.setLoginErrorString(
+            error.status
+          );
+          this.cd.markForCheck();
+        },
+        () => {
+          this.loading = false;
+          this.cd.markForCheck();
+        }
+      );
   }
 
-  inputError(control: AbstractControl): boolean {
-    // // get error message and control name in string
-    // const errorObj = this.sharedService.inputError(control);
-
-    // // assign error to input
-    // if (errorObj) {
-    //   switch (errorObj.controlName) {
-    //     case 'email':
-    //       this.emailErrorStr = errorObj.errorStr;
-    //       break;
-    //     case 'password':
-    //       this.passwordErrorStr = errorObj.errorStr;
-    //       break;
-    //   }
-    //   return true;
-    // }
-    return true;
+  routeSwitch(role: string) {
+    this.sharedService.routeSwitch(role);
   }
 
   setRecoveryRoute() {
     this.recoveryRoute = true;
+    this.cd.markForCheck();
   }
 
   ngOnDestroy() {
     if (this.recoveryRoute) {
-      this.accountService.passMailData(this.email.value);
+      this.accountService.passMailData(this.logForm.value.email);
     }
-    // this.sharedService.deleteControlArray();
   }
 }

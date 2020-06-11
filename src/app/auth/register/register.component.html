@@ -1,187 +1,123 @@
-<div id="container">
-  <p-progressBar mode="indeterminate" *ngIf="loading === true"></p-progressBar>
-  <form #reg="ngForm" [formGroup]="regForm">
-    <div id="header">
-      <span id="signup"> Zarejestruj się</span>
-      <!-- <span> {{regForm.value | json }}</span> -->
-      <div id="profiles-container">
-        <span id="profile-info">Wybierz swój profil</span>
-        <div id="profiles">
-          <div
-            class="profile"
-            *ngFor="let profile of profiles"
-            class=" cc-selector"
+<app-base-auth
+  [header]="header"
+  [loading]="loading"
+  [error]="registrationError"
+  [errorMessage]="registrationErrorMessage"
+>
+  <ng-template #headerContent>
+    <div id="profiles-container">
+      <span id="profile-info">Wybierz swój profil</span>
+      <div id="profiles">
+        <div
+          class="profile"
+          *ngFor="let profile of profiles"
+          class=" cc-selector"
+        >
+          <input
+            id="{{ profile.value }}"
+            type="radio"
+            [formControl]="regForm.get('profileName')"
+            value="{{ profile.value }}"
+            (focus)="hide(profile.value)"
+          />
+          <label
+            for="{{ profile.value }}"
+            class="{{ profile.value }} card-cc"
+            matTooltip="{{ profile.message }}"
+            matTooltipPosition="below"
           >
-            <input
-              id="{{ profile.value }}"
-              type="radio"
-              formControlName="profileName"
-              value="{{ profile.value }}"
-              (focus)="hide(profile.value)"
-            />
-            <label
-              for="{{ profile.value }}"
-              class="{{ profile.value }} card-cc"
-              matTooltip="{{ profile.message }}"
-              matTooltipPosition="below"
-            >
-              <fa-icon [icon]="['fas', profile.icon]"></fa-icon>
-            </label>
-          </div>
+            <fa-icon [icon]="['fas', profile.icon]"></fa-icon>
+          </label>
         </div>
       </div>
     </div>
-    <div id="register-container">
-      <div id="form-container">
-        <div id="regErr">
-          <mat-error *ngIf="registrationError">{{
-            registrationErrorMessage
-          }}</mat-error>
-        </div>
-        <!-- <div class="group half"> -->
-        <!-- <div class="field right"> -->
-        <div class="group half">
-          <mat-form-field>
-            <input
-              matInput
-              autocomplete="given-name"
-              placeholder="Name"
-              type="text"
-              id="name"
-              formControlName="name"
-              (focus)="onFocus(name)"
-              (blur)="onBlur(name)"
-              autofocus
-            />
-            <mat-error *ngIf="inputError(name)">{{ nameErrorStr }}</mat-error>
-          </mat-form-field>
-        </div>
-        <div class="group half">
-          <mat-form-field>
-            <input
-              matInput
-              autocomplete="family-name"
-              placeholder="Last name"
-              type="text"
-              id="lastName"
-              formControlName="lastName"
-              (focus)="onFocus(lastName)"
-              (blur)="onBlur(lastName)"
-            />
-            <mat-error *ngIf="inputError(lastName)">{{
-              lastNameErrorStr
-            }}</mat-error>
-          </mat-form-field>
-        </div>
-        <div
-          [ngClass]="
-            profileName.value === 'Student' ? 'group full' : 'group half'
-          "
-        >
-          <mat-form-field>
-            <input
-              matInput
-              autocomplete="email"
-              placeholder="E-mail"
-              type="text"
-              id="email"
-              formControlName="email"
-              (focus)="onFocus(email)"
-              (blur)="onBlur(email)"
-            />
-            <mat-error *ngIf="inputError(email)">{{ emailErrorStr }}</mat-error>
-            <mat-hint>Należy podać prawdziwy adres email</mat-hint>
-          </mat-form-field>
-        </div>
-        <div class="group half" *ngIf="profileName.value === 'Student'">
-          <mat-form-field>
-            <input
-              matInput
-              placeholder="Nr Albumu"
-              type="text"
-              id="albumID"
-              formControlName="albumID"
-              (focus)="onFocus(albumID)"
-              (blur)="onBlur(albumID)"
-            />
-            <mat-error *ngIf="inputError(albumID)">{{
-              albumIDErrorStr
-            }}</mat-error>
-          </mat-form-field>
-        </div>
-        <div class="group half">
-          <mat-form-field>
-            <input
-              matInput
-              autocomplete="tel"
-              placeholder="Nr telefonu"
-              type="tel"
-              name="number"
-              id="phoneNum"
-              formControlName="phoneNum"
-              (focus)="onFocus(phoneNum)"
-              (blur)="onBlur(phoneNum)"
-            />
-            <mat-error *ngIf="inputError(phoneNum)">{{
-              phoneNumErrorStr
-            }}</mat-error>
-          </mat-form-field>
-        </div>
-        <div class="group half">
-          <mat-form-field>
-            <input
-              matInput
-              placeholder="Password"
-              type="password"
-              id="password"
-              formControlName="password"
-              (focus)="onFocus(password)"
-              (blur)="onBlur(password)"
-              (keydown)="clearPasswordConfirm()"
-            />
-            <mat-error *ngIf="inputError(password)">{{
-              passwordErrorStr
-            }}</mat-error>
-          </mat-form-field>
-        </div>
-        <div class="group half">
-          <mat-form-field>
-            <input
-              matInput
-              placeholder="Confirm password"
-              type="password"
-              id="passwordConfirm"
-              formControlName="passwordConfirm"
-              (focus)="onFocus(passwordConfirm)"
-              (blur)="onBlur(passwordConfirm)"
-            />
-            <mat-error
-              *ngIf="passwordNoMatch() || inputError(passwordConfirm)"
-              >{{ passwordConfirmErrorStr }}</mat-error
-            >
-          </mat-form-field>
-        </div>
+  </ng-template>
+
+  <ng-template #main>
+    <div class="register-cont">
+      <div class="group half">
+        <app-input-control
+          [control]="regForm.get('name')"
+          type="text"
+          placeholder="Name"
+          autocomplete="given-name"
+          [setAutofocus]="true"
+        ></app-input-control>
       </div>
-      <div class="btnBox">
-        <button
-          type="button"
-          class="white"
-          mat-raised-button
-          color="primary"
-          (click)="onSubmit(reg)"
-        >
-          Rejestracja
-        </button>
+      <div class="group half">
+        <app-input-control
+          [control]="regForm.get('lastName')"
+          type="text"
+          placeholder="Last name"
+          autocomplete="family-name"
+        ></app-input-control>
       </div>
       <div
-        class="additionalLink"
-        [routerLink]="['/auth/login']"
-        routerLinkActive="active"
+        class="group"
+        [ngClass]="
+          (regForm.get('profileName') | valueChange | async) === 'Student'
+            ? 'full'
+            : 'half'
+        "
       >
-        Posiadasz już konto?
+        <app-input-control
+          [control]="regForm.get('email')"
+          type="text"
+          placeholder="Email"
+          autocomplete="email"
+          controlHint="Należy podać prawdziwy adres email"
+        ></app-input-control>
+      </div>
+      <div
+        class="group half"
+        *ngIf="(regForm.get('profileName') | valueChange | async) === 'Student'"
+      >
+        <app-input-control
+          [control]="regForm.get('albumID')"
+          type="text"
+          placeholder="Nr Albumu"
+        ></app-input-control>
+      </div>
+      <div class="group half">
+        <app-input-control
+          [control]="regForm.get('phoneNum')"
+          type="tel"
+          placeholder="Nr telefonu"
+          autocomplete="tel"
+        ></app-input-control>
+      </div>
+      <div class="group half">
+        <app-input-control
+          [control]="regForm.get('password')"
+          type="password"
+          placeholder="Password"
+          (controlKeydown)="clearPasswordConfirm()"
+        ></app-input-control>
+      </div>
+      <div class="group half">
+        <app-input-control
+          [control]="regForm.get('passwordConfirm')"
+          type="password"
+          placeholder="Confirm password"
+        ></app-input-control>
       </div>
     </div>
-  </form>
-</div>
-<!-- </div>
-</div> -->
+  </ng-template>
+
+  <ng-template #btnBox>
+    <button
+      type="button"
+      class="white"
+      mat-raised-button
+      color="primary"
+      (click)="onSubmit()"
+    >
+      Rejestracja
+    </button>
+  </ng-template>
+  <ng-template #additional>
+    <div [routerLink]="['/auth/login']" routerLinkActive="active">
+      Posiadasz już konto?
+    </div>
+  </ng-template>
+</app-base-auth>

@@ -1,3 +1,5 @@
+import { InputControlModule } from 'src/app/shared/form-controls/input-control/input-control.module';
+import { BaseAuthModule } from './../base-auth/base-auth.module';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
@@ -19,7 +21,9 @@ export const routes: Routes = [
     ReactiveFormsModule,
     ProgressBarModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    BaseAuthModule,
+    InputControlModule
   ],
   declarations: [RestorePasswordComponent]
 })

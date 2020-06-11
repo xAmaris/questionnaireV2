@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -7,27 +7,29 @@ import {
 } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { SharedService } from '../../services/shared.service';
 import { AccountService } from 'src/app/services/account.service';
+import { passwordPattern } from 'src/app/shared/other/password-pattern';
 
 @Component({
   selector: 'app-restore-password',
   templateUrl: './restore-password.component.html',
-  styleUrls: ['./restore-password.component.scss']
+  styleUrls: ['./restore-password.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RestorePasswordComponent implements OnInit {
-  loader = false;
+  header = 'Nowe hasło';
+  passwordPattern = passwordPattern;
+  loading = false;
   passwordForm: FormGroup;
   passwordErrorStr: string;
   password: AbstractControl;
   token: string;
   href: string[];
-  passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}/;
+
   constructor(
     private router: Router,
     private fb: FormBuilder,
     private accountService: AccountService,
-    private sharedService: SharedService,
     private titleService: Title
   ) {
     this.passwordForm = this.fb.group({
@@ -45,16 +47,16 @@ export class RestorePasswordComponent implements OnInit {
   }
   onSubmit(form) {
     if (form.valid) {
-      this.loader = true;
+      this.loading = true;
       this.accountService
         .changePasswordByRestoringPassword(this.token, this.password.value)
         .subscribe(
           data => {
-            this.loader = false;
+            this.loading = false;
             this.router.navigateByUrl('auth/login');
           },
           error => {
-            this.loader = false;
+            this.loading = false;
           }
         );
     }

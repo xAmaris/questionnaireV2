@@ -1,0 +1,17 @@
+<mat-form-field>
+  <input
+    matInput
+    [autocomplete]="autocomplete"
+    [placeholder]="placeholder"
+    [type]="type"
+    [formControl]="control"
+    (focus)="onFocus($event)"
+    (blur)="onBlur($event)"
+    (keydown)="onKeydown($event)"
+    [autofocus]="setAutofocus"
+  />
+  <mat-error>{{
+    control | controlError: (control | valueChange | async)
+  }}</mat-error>
+  <mat-hint *ngIf="controlHint">{{ controlHint }}</mat-hint>
+</mat-form-field>

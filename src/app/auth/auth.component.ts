@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { basicTransition } from './animations/auth-transition.animation';
 
 @Component({
@@ -8,8 +8,4 @@ import { basicTransition } from './animations/auth-transition.animation';
   animations: [basicTransition],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AuthComponent implements OnInit {
-  constructor() {}
-
-  ngOnInit(): void {}
-}
+export class AuthComponent {}
