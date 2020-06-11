@@ -1,11 +1,10 @@
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { LoadingScreenModule } from './shared/loading-screen/loading-screen.module';
-import { RouterModule } from '@angular/router';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MainBarModule } from './core/main-bar/main-bar.module';
-import { library } from '@fortawesome/fontawesome-svg-core';
 import { faChartBar, faEye } from '@fortawesome/free-regular-svg-icons';
 import {
   faArrowLeft,
@@ -28,28 +27,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { LoadingOverlayModule } from './shared/loading-overlay/loading-overlay.module';
 import { AppRoutingModule } from './app.routing';
-
-library.add(
-  faTimes,
-  faBars,
-  faPlus,
-  faTrash,
-  faSortDown,
-  faSortUp,
-  faGripVertical,
-  faPen,
-  faBriefcase,
-  faCog,
-  faEye,
-  faClone,
-  faUserAlt,
-  faEllipsisV,
-  faSearch,
-  faEllipsisH,
-  faChartBar,
-  faArrowLeft,
-  faFileExcel
-);
+import { HttpClientModule } from '@angular/common/http';
+import { AppConfig } from './app.config';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [AppComponent],
@@ -59,10 +39,35 @@ library.add(
     MainBarModule,
     LoadingOverlayModule,
     LoadingScreenModule,
-    AppRoutingModule
+    HttpClientModule,
+    AppRoutingModule,
+    MatFormFieldModule
   ],
-  providers: [],
+  providers: [AppConfig],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
-
+export class AppModule {
+  constructor(library: FaIconLibrary) {
+    library.addIcons(
+      faTimes,
+      faBars,
+      faPlus,
+      faTrash,
+      faSortDown,
+      faSortUp,
+      faGripVertical,
+      faPen,
+      faBriefcase,
+      faCog,
+      faEye,
+      faClone,
+      faUserAlt,
+      faEllipsisV,
+      faSearch,
+      faEllipsisH,
+      faChartBar,
+      faArrowLeft,
+      faFileExcel
+    );
+  }
+}

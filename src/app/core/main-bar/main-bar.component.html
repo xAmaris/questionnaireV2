@@ -16,16 +16,12 @@
     </div>
     <div id="preview" *ngIf="(showPreview | async)">PODGLĄD</div>
   </div>
-  <!-- <ul class="menu" *ngIf="isLogged === false">
+  <!-- <ul class="menu" *ngIf="!isLogged">
     <li class="menu-item" [routerLink]="['/auth/login']">Logowanie</li>
-  </ul> -->
-  <!-- <div
-    id="profile-container"
-    *ngIf="isLogged === true"
-    [ngSwitch]="accountRole"
-  >
+  </ul>
+  <div id="profile-container" *ngIf="isLogged" [ngSwitch]="accountRole">
     <div id="career-offices" *ngSwitchCase="'careerOffice'">
-      <ul class="menu" *ngIf="showAdmin === true">
+      <ul class="menu" *ngIf="showAdmin">
         <li
           class="menu-item"
           [matMenuTriggerFor]="surveyInfo"
@@ -38,35 +34,35 @@
       <div id="survey-buttons">
         <fa-icon
           [icon]="['far', 'eye']"
-          *ngIf="showCreatorButton === true"
+          *ngIf="showCreatorButton"
           matTooltip="{{ toolTipInfo.show }}"
           matTooltipPosition="below"
           (click)="showSurvey()"
-        ></fa-icon> -->
-  <!-- <app-progress-button
-          *ngIf="showCreatorButton === true"
+        ></fa-icon>
+        <app-progress-button
+          *ngIf="showCreatorButton"
           [buttonText]="buttonText"
           [loader]="isLoading"
           (buttonClick)="sendSurvey()"
-        ></app-progress-button> -->
-  <!-- </div>
+        ></app-progress-button>
+      </div>
     </div>
     <div
       id="userInfo"
       class="clickable"
       [matMenuTriggerFor]="userInfo"
       #menuTrigger="matMenuTrigger"
-      *ngIf="showUserInfo === true"
+      *ngIf="showUserInfo"
     >
       <img src="{{ profileIMG }}" alt="zdjęcie profilowe" />
     </div>
-    <mat-menu #userInfo="matMenu" id="sth" [overlapTrigger]="false"> -->
-  <!-- <app-user-info
+    <mat-menu #userInfo="matMenu" id="sth" [overlapTrigger]="false">
+      <app-user-info
         (logout)="emitLogout()"
         (routeSwitch)="emitRouteSwitch($event)"
         [name]="profileName"
-      ></app-user-info> -->
-  <!-- </mat-menu>
+      ></app-user-info>
+    </mat-menu>
     <mat-menu #surveyInfo="matMenu" [overlapTrigger]="false">
       <button mat-menu-item (click)="redirectTo('survey')">Szablony</button>
       <button mat-menu-item (click)="redirectTo('sent')">Historia</button>
