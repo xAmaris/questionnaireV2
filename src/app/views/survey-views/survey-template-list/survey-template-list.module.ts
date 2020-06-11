@@ -5,6 +5,7 @@ import { SurveyTemplateListComponent } from './survey-template-list.component';
 import { SurveyTemplateListRoutingModule } from './survey-template-list.routing';
 import { DashboardBarModule } from 'src/app/shared/dashboard/dashboard-bar/dashboard-bar.module';
 import { DashboardListModule } from 'src/app/shared/dashboard/dashboard-list/dashboard-list.module';
+import { CreatedAtModule } from 'src/app/shared/pipes/created-at/created-at.module';
 
 @NgModule({
   declarations: [SurveyTemplateListComponent],
@@ -13,7 +14,8 @@ import { DashboardListModule } from 'src/app/shared/dashboard/dashboard-list/das
     SurveyTemplateListRoutingModule,
     DashboardBarModule,
     DashboardListModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    CreatedAtModule
   ]
 })
 export class SurveyTemplateListModule {}

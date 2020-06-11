@@ -3,17 +3,12 @@
   [buttonDets]="buttonDets"
   (buttonClick)="redirectToNew()"
 ></app-dashboard-bar>
-<app-dashboard-list
-  [itemArr]="surveys$ | async"
-  [emptyListInfo]="emptyListInfo"
->
+<app-dashboard-list [itemArr]="surveys | async" [emptyListInfo]="emptyListInfo">
   <ng-template let-survey>
     <app-dashboard-tile [itemData]="survey" (tileClick)="openCreator(survey)">
-      <!-- <app-survey-tile [survey]="changeSurveyToModel(item)"></app-survey-tile> -->
-
-      <!-- <div class="title">{{ survey.title }}</div>
-      <div class="date">{{ survey.created_date }}</div>
-      <div class="time">{{ survey.created_time }}</div> -->
+      <div class="title">{{ survey.title }}</div>
+      <div class="date">{{ survey.createdAt | createdDate }}</div>
+      <div class="time">{{ survey.createdAt | createdTime }}</div>
     </app-dashboard-tile>
 
     <button mat-icon-button (click)="openConfirmDeleteDialog(survey.id)">

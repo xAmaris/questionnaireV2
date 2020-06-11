@@ -1,4 +1,3 @@
-import { SurveyService } from './../../../services/survey.service';
 import {
   Component,
   OnInit,
@@ -8,7 +7,11 @@ import {
 import { Subscription, Subject, Observable } from 'rxjs';
 import { TemplateSurvey } from 'src/app/models/survey/surveys/survey-template.model';
 import { Router } from '@angular/router';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { SurveyService } from 'src/app/services/survey.service';
+import { first } from 'rxjs/operators';
+import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
+import { DeleteTemplateDialog } from 'src/app/models/dialog/delete-template-dialog.model';
 
 @Component({
   selector: 'app-survey-template-list',
@@ -63,7 +66,7 @@ export class SurveyTemplateListComponent implements OnInit, OnDestroy {
     });
   }
 
-  openConfimDeleteDialog(id: number): void {
+  openConfirmDeleteDialog(id: number): void {
     this.openSurveyDialog().pipe(first()).subscribe((res: boolean) => {
       if (res) {
         this.deleteSurvey(id);
@@ -74,7 +77,7 @@ export class SurveyTemplateListComponent implements OnInit, OnDestroy {
   openSurveyDialog(): Observable<boolean> {
     const dialogRef: MatDialogRef<ConfirmDialogComponent> = this.dialog.open(
       ConfirmDialogComponent,
-      { data: new DeleteTemplateDialogData() }
+      { data: new DeleteTemplateDialog() }
     );
     return dialogRef.afterClosed();
   }

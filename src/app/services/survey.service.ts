@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { TemplateSurvey } from '../models/survey/surveys/survey-template.model';
 import { SentSurvey } from '../models/survey/surveys/sent-survey.model';
+import { UpdateSurvey } from '../models/survey/surveys/update-survey.model';
+import { HttpClient } from '@angular/common/http';
+import { AppConfig } from '../app.config';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +21,7 @@ export class SurveyService {
   constructor(private http: HttpClient, private config: AppConfig) {}
 
   saveSurveyAnswer(survey, id, hash) {
+    console.log('types', survey, id, hash);
     return this.http.post<any>(this.config.apiUrl + '/surveyanswer/' + hash, {
       SurveyTitle: survey.title,
       SurveyId: id,
@@ -25,35 +29,39 @@ export class SurveyService {
     });
   }
   sendSurvey(survey) {
+    console.log('types', survey);
     return this.http.post<any>(this.config.apiUrl + '/email/emails', {
       Subject: survey.Subject,
       Body: survey.Body
     });
   }
   sendSpecificSurvey(id: number): Observable<any> {
+    console.log('zwrotka');
     return this.http.post<any>(
       this.config.apiUrl + '/email/survey-emails/' + id,
       {}
     );
   }
   createSurvey(survey) {
+    console.log('types', survey);
     return this.http.post<any>(this.config.apiUrl + '/surveytemplate/surveys', {
       Title: survey.title,
       Questions: survey.questions
     });
   }
-  updateSurvey(object: Update): Observable<any> {
+  updateSurvey(object: UpdateSurvey): Observable<any> {
     console.log(object);
-    return this.http.put<Update>(
+    return this.http.put<UpdateSurvey>(
       this.config.apiUrl + '/surveytemplate/surveys',
       {
         surveyId: object.id,
-        Title: object.Title,
-        Questions: object.QuestionTemplates
+        Title: object.title,
+        Questions: object.questionTemplates
       }
     );
   }
   deleteSurvey(id: number) {
+    console.log('zwrotka');
     return this.http.delete<any>(this.config.apiUrl + '/surveytemplate/' + id);
   }
   getAllSurveys(): Observable<TemplateSurvey[]> {
@@ -62,6 +70,7 @@ export class SurveyService {
     );
   }
   getAllSentSurveys(): Observable<any[]> {
+    console.log('zwrotka');
     return this.http.get<any[]>(this.config.apiUrl + '/survey/surveys');
   }
   getSurveyTemplateWithId(id: number): Observable<TemplateSurvey> {
@@ -73,11 +82,13 @@ export class SurveyService {
     return this.http.get<SentSurvey>(this.config.apiUrl + '/survey/' + id);
   }
   getSurveyWithIdAndHash(id: number, hash: string): Observable<any> {
+    console.log('zwrotka');
     return this.http.get<any>(
       this.config.apiUrl + '/survey/' + id + '/' + hash
     );
   }
   getSurveyReport(id: number): Observable<any> {
+    console.log('zwrotka');
     return this.http.get<any>(
       this.config.apiUrl + '/surveyreport/surveyReports/' + id
     );
