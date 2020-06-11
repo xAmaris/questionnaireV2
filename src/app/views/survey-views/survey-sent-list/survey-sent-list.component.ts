@@ -1,4 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  OnDestroy
+} from '@angular/core';
 import { Subject, Observable, Subscription } from 'rxjs';
 import { SurveyService } from 'src/app/services/survey.service';
 import { SentSurvey } from 'src/app/models/survey/surveys/sent-survey.model';
@@ -10,15 +15,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./survey-sent-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SurveySentListComponent implements OnInit {
+export class SurveySentListComponent implements OnInit, OnDestroy {
   groupTitle = 'Wysłane ankiety';
   emptyListInfo = 'Brak wysłanych ankiet';
 
-  private _surveys = new Subject<SentSurvey[]>();
-
-  get surveys(): Observable<SentSurvey[]> {
-    return this._surveys.asObservable();
-  }
+  surveys = new Subject<SentSurvey[]>();
 
   getAllSurveysSub = new Subscription();
 
@@ -48,8 +49,11 @@ export class SurveySentListComponent implements OnInit {
   ): void {
     allSurvey$.subscribe((data: SentSurvey[]) => {
       if (data) {
-        this._surveys.next(data);
+        this.surveys.next(data);
       }
     });
+  }
+  ngOnDestroy(): void {
+    this.surveyService.isCreatorLoading(false);
   }
 }

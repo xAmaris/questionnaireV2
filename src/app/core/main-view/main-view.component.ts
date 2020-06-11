@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-main-view',
@@ -7,10 +8,9 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MainViewComponent implements OnInit {
-
-  constructor() { }
+  constructor(private sharedService: SharedService) {}
 
   ngOnInit(): void {
+    this.sharedService.setShowUserInfo(true);
   }
-
 }

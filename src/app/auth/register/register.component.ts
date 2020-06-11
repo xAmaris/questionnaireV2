@@ -42,8 +42,6 @@ export class RegisterComponent implements OnInit {
     { value: 'Admin', icon: 'briefcase', message: 'Admin' }
   ];
 
-  emailPattern = emailPattern;
-  passwordPattern = passwordPattern;
   namePattern = /^([a-zA-ZąęćłóśźżĄĘĆŁÓŚŹŻ\\']){0,}$/;
   surnamePattern = /^([a-zA-ZąęćłóśźżĄĘĆŁÓŚŹŻ]+[\s\-\\'])*[a-zA-ZąęćłóśźżĄĘĆŁÓŚŹŻ]+$/;
 
@@ -77,14 +75,14 @@ export class RegisterComponent implements OnInit {
         '',
         Validators.compose([
           Validators.required,
-          Validators.pattern(this.emailPattern)
+          Validators.pattern(emailPattern)
         ])
       ],
       password: [
         '',
         Validators.compose([
           Validators.required,
-          Validators.pattern(this.passwordPattern)
+          Validators.pattern(passwordPattern)
         ])
       ],
       passwordConfirm: [
@@ -157,11 +155,11 @@ export class RegisterComponent implements OnInit {
   createUser(): void {
     const regValue = this.regForm.value;
     const profileName = regValue.profileName;
-    const albumId = regValue.albumId;
+    const albumID = regValue.albumID;
     switch (profileName) {
       case 'Student':
         this.user = new Student();
-        (this.user as Student).albumID = albumId;
+        (this.user as Student).albumID = albumID;
         break;
       case 'Admin':
         this.user = new Admin();

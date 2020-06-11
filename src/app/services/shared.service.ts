@@ -8,8 +8,10 @@ import { Router } from '@angular/router';
 export class SharedService {
   private readonly showBack$ = new BehaviorSubject<boolean>(false);
   private readonly showUserInfo$ = new BehaviorSubject<boolean>(false);
+  private readonly showCreatorButton$ = new BehaviorSubject<boolean>(false);
   private readonly showPreview$ = new Subject<boolean>();
-  private readonly showAdminMenu$ = new Subject<boolean>();
+  private readonly showAdminMenu$ = new BehaviorSubject<boolean>(undefined);
+  private readonly showSurveyButton$ = new Subject<boolean>();
 
   constructor(private readonly router: Router) {}
 
@@ -25,6 +27,12 @@ export class SharedService {
   get showUserInfo(): Observable<boolean> {
     return this.showUserInfo$.asObservable();
   }
+  get showCreatorButton(): Observable<boolean> {
+    return this.showCreatorButton$.asObservable();
+  }
+  get showSurveyButton(): Observable<boolean> {
+    return this.showSurveyButton$.asObservable();
+  }
 
   setShowButton(x: boolean): void {
     this.showBack$.next(x);
@@ -38,6 +46,12 @@ export class SharedService {
   setShowUserInfo(x: boolean): void {
     this.showUserInfo$.next(x);
   }
+  setShowCreatorButton(x: boolean): void {
+    this.showCreatorButton$.next(x);
+  }
+  setShowSurveyButton(x: boolean): void {
+    this.showSurveyButton$.next(x);
+  }
 
   routeSwitch(role: string): void {
     switch (role) {
@@ -45,7 +59,7 @@ export class SharedService {
         this.router.navigateByUrl('/app/student');
         break;
       case 'careerOffice':
-        this.router.navigateByUrl('/app/admin/d/survey/(s:a//m:a)');
+        this.router.navigateByUrl('/app/admin/templates');
         break;
     }
   }

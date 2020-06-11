@@ -18,7 +18,6 @@ import { passwordPattern } from 'src/app/shared/other/password-pattern';
 })
 export class RestorePasswordComponent implements OnInit {
   header = 'Nowe hasło';
-  passwordPattern = passwordPattern;
   loading = false;
   passwordForm: FormGroup;
   passwordErrorStr: string;
@@ -33,10 +32,7 @@ export class RestorePasswordComponent implements OnInit {
     private titleService: Title
   ) {
     this.passwordForm = this.fb.group({
-      password: [
-        '',
-        [Validators.required, Validators.pattern(this.passwordPattern)]
-      ]
+      password: ['', [Validators.required, Validators.pattern(passwordPattern)]]
     });
     this.password = this.passwordForm.controls.password;
     this.href = this.router.url.split('/');

@@ -58,18 +58,16 @@ export class SurveyService {
       }
     );
   }
-  deleteSurvey(id: number) {
-    console.log('zwrotka');
-    return this.http.delete<any>(this.config.apiUrl + '/surveytemplate/' + id);
+  deleteSurvey(id: number): Observable<void> {
+    return this.http.delete<void>(this.config.apiUrl + '/surveytemplate/' + id);
   }
   getAllSurveys(): Observable<TemplateSurvey[]> {
     return this.http.get<TemplateSurvey[]>(
       this.config.apiUrl + '/surveytemplate/surveys'
     );
   }
-  getAllSentSurveys(): Observable<any[]> {
-    console.log('zwrotka');
-    return this.http.get<any[]>(this.config.apiUrl + '/survey/surveys');
+  getAllSentSurveys(): Observable<SentSurvey[]> {
+    return this.http.get<SentSurvey[]>(this.config.apiUrl + '/survey/surveys');
   }
   getSurveyTemplateWithId(id: number): Observable<TemplateSurvey> {
     return this.http.get<TemplateSurvey>(

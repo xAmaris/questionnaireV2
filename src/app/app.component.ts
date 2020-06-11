@@ -1,4 +1,9 @@
-import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  OnDestroy,
+  ChangeDetectorRef
+} from '@angular/core';
 import {
   Router,
   RouterEvent,
@@ -21,7 +26,10 @@ export class AppComponent implements OnDestroy {
 
   routerSub = new Subscription();
 
-  constructor(private readonly router: Router) {
+  constructor(
+    private readonly router: Router,
+    private readonly cd: ChangeDetectorRef
+  ) {
     this.routerSub = this.router.events.subscribe((event: RouterEvent) => {
       this.navigationInterceptor(event);
     });
@@ -38,7 +46,14 @@ export class AppComponent implements OnDestroy {
     ) {
       this.loading = false;
       this.loadingOverlay = false;
+      this.cd.markForCheck();
     }
+  }
+
+  redirectTo(data: string): void {
+    this.loadingOverlay = true;
+    this.router.navigateByUrl(data);
+    this.cd.markForCheck();
   }
 
   ngOnDestroy(): void {

@@ -89,6 +89,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         },
         () => {
           this.loading = false;
+          console.log(this.loading);
           this.cd.markForCheck();
         }
       );

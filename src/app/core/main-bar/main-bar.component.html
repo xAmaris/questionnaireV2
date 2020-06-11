@@ -16,12 +16,16 @@
     </div>
     <div id="preview" *ngIf="(showPreview | async)">PODGLĄD</div>
   </div>
-  <!-- <ul class="menu" *ngIf="!isLogged">
+  <ul class="menu" *ngIf="!(isLogged | async)">
     <li class="menu-item" [routerLink]="['/auth/login']">Logowanie</li>
   </ul>
-  <div id="profile-container" *ngIf="isLogged" [ngSwitch]="accountRole">
+  <div
+    id="profile-container"
+    *ngIf="(isLogged | async)"
+    [ngSwitch]="accountRole | async"
+  >
     <div id="career-offices" *ngSwitchCase="'careerOffice'">
-      <ul class="menu" *ngIf="showAdmin">
+      <ul class="menu" *ngIf="(showAdminMenu | async)">
         <li
           class="menu-item"
           [matMenuTriggerFor]="surveyInfo"
@@ -34,17 +38,17 @@
       <div id="survey-buttons">
         <fa-icon
           [icon]="['far', 'eye']"
-          *ngIf="showCreatorButton"
+          *ngIf="(showCreatorButton | async)"
           matTooltip="{{ toolTipInfo.show }}"
           matTooltipPosition="below"
           (click)="showSurvey()"
         ></fa-icon>
-        <app-progress-button
-          *ngIf="showCreatorButton"
+        <!-- <app-progress-button
+          *ngIf="showCreatorButton | async"
           [buttonText]="buttonText"
           [loader]="isLoading"
           (buttonClick)="sendSurvey()"
-        ></app-progress-button>
+        ></app-progress-button> -->
       </div>
     </div>
     <div
@@ -52,20 +56,20 @@
       class="clickable"
       [matMenuTriggerFor]="userInfo"
       #menuTrigger="matMenuTrigger"
-      *ngIf="showUserInfo"
+      *ngIf="(showUserInfo | async)"
     >
       <img src="{{ profileIMG }}" alt="zdjęcie profilowe" />
     </div>
     <mat-menu #userInfo="matMenu" id="sth" [overlapTrigger]="false">
-      <app-user-info
+      <!-- <app-user-info
         (logout)="emitLogout()"
         (routeSwitch)="emitRouteSwitch($event)"
         [name]="profileName"
-      ></app-user-info>
+      ></app-user-info> -->
     </mat-menu>
     <mat-menu #surveyInfo="matMenu" [overlapTrigger]="false">
-      <button mat-menu-item (click)="redirectTo('survey')">Szablony</button>
+      <button mat-menu-item (click)="redirectTo('templates')">Szablony</button>
       <button mat-menu-item (click)="redirectTo('sent')">Historia</button>
     </mat-menu>
-  </div> -->
+  </div>
 </div>

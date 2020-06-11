@@ -7,19 +7,22 @@ import { ApiUserProfile } from '../models/user/user-profile.model';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
-  private readonly isLogged$ = new BehaviorSubject<boolean>(undefined);
+  private readonly _isLogged$ = new BehaviorSubject<boolean>(undefined);
   mail: string;
-  role = new Subject<string>();
+  role = new BehaviorSubject<string>(undefined);
   profileData = new Subject<ApiUserProfile>();
 
   constructor(private http: HttpClient, private config: AppConfig) {}
 
   get isLogged(): boolean {
-    return this.isLogged$.value;
+    return this._isLogged$.value;
+  }
+  get isLogged$(): Observable<boolean> {
+    return this._isLogged$.asObservable();
   }
 
   isLoggedNext(x) {
-    this.isLogged$.next(x);
+    this._isLogged$.next(x);
   }
   setRoleSubject(x) {
     this.role.next(x);

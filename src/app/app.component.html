@@ -1,6 +1,6 @@
 <div id="appContainer">
   <div id="menuBar">
-    <app-main-bar> </app-main-bar>
+    <app-main-bar (redirectToButton)="redirectTo($event)"> </app-main-bar>
   </div>
   <div [ngClass]="loadingOverlay ? 'mainContainer opacity' : 'mainContainer'">
     <router-outlet></router-outlet>

@@ -2,10 +2,13 @@ import {
   Component,
   OnInit,
   OnDestroy,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  Output,
+  EventEmitter
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedService } from 'src/app/services/shared.service';
+import { AccountService } from 'src/app/services/account.service';
 
 @Component({
   selector: 'app-main-bar',
@@ -14,6 +17,9 @@ import { SharedService } from 'src/app/services/shared.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MainBarComponent implements OnInit, OnDestroy {
+  private url = '/app/admin/';
+
+  profileIMG = 'assets/profile-image.png';
   logoIMG = 'assets/logo-wsei.png';
   toolTipInfo = {
     show: 'Podgląd',
@@ -23,10 +29,18 @@ export class MainBarComponent implements OnInit, OnDestroy {
 
   showBack = this.sharedService.showBack;
   showPreview = this.sharedService.showPreview;
+  isLogged = this.accountService.isLogged$;
+  accountRole = this.accountService.role;
+  showAdminMenu = this.sharedService.showAdminMenu;
+  showCreatorButton = this.sharedService.showCreatorButton;
+  showUserInfo = this.sharedService.showUserInfo;
+
+  @Output() redirectToButton = new EventEmitter<string>();
 
   constructor(
     private readonly router: Router,
-    private readonly sharedService: SharedService
+    private readonly sharedService: SharedService,
+    private readonly accountService: AccountService
   ) {}
 
   ngOnInit(): void {}
@@ -48,6 +62,14 @@ export class MainBarComponent implements OnInit, OnDestroy {
       routeUrl = '/app/admin/survey/create/' + id;
     }
     this.router.navigateByUrl(routeUrl);
+  }
+
+  redirectTo(data: string): void {
+    this.redirectToButton.emit(this.url + data);
+  }
+
+  showSurvey(): void {
+    this.sharedService.setShowSurveyButton(true);
   }
 
   ngOnDestroy(): void {}

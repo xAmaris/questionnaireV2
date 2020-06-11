@@ -1,3 +1,5 @@
+import { GuidGuard } from './auth/guards/guid.auth';
+import { RoleGuard } from './auth/guards/role.auth';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { LoadingScreenModule } from './shared/loading-screen/loading-screen.module';
 import { BrowserModule } from '@angular/platform-browser';
@@ -27,9 +29,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { LoadingOverlayModule } from './shared/loading-overlay/loading-overlay.module';
 import { AppRoutingModule } from './app.routing';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AppConfig } from './app.config';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { AuthGuard } from './auth/guards/guard.auth';
+import { ViewformGuard } from './auth/guards/viewform.auth';
+import { JwtInterceptor } from './auth/jwt.interceptor';
 
 @NgModule({
   declarations: [AppComponent],
@@ -43,7 +48,17 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
     AppRoutingModule,
     MatFormFieldModule
   ],
-  providers: [AppConfig],
+  providers: [
+    AppConfig,
+    AuthGuard,
+    RoleGuard,
+    GuidGuard,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: JwtInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

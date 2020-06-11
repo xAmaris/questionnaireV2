@@ -1,4 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { SharedService } from 'src/app/services/shared.service';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-admin-view',
@@ -7,10 +9,14 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminViewComponent implements OnInit {
-
-  constructor() { }
+  constructor(
+    private sharedService: SharedService,
+    private titleService: Title
+  ) {}
 
   ngOnInit(): void {
+    this.titleService.setTitle('Ankietyzator - admin');
+    console.log('ashdhashd')
+    this.sharedService.setShowAdminMenu(true);
   }
-
 }

@@ -19,8 +19,6 @@ import { matchPassword } from 'src/app/shared/other/math-password.validator';
   styleUrls: ['./password-change.component.scss']
 })
 export class PasswordChangeComponent implements OnInit, OnDestroy {
-  passwordPattern = passwordPattern;
-
   passwordForm: FormGroup;
   header = 'Zmień hasło';
   loading = false;
@@ -71,7 +69,7 @@ export class PasswordChangeComponent implements OnInit, OnDestroy {
         '',
         Validators.compose([
           Validators.required,
-          Validators.pattern(this.passwordPattern)
+          Validators.pattern(passwordPattern)
         ])
       ],
       confirmPassword: [

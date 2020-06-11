@@ -1,3 +1,4 @@
+import { MatButtonModule } from '@angular/material/button';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SurveySentListComponent } from './survey-sent-list.component';
@@ -15,7 +16,8 @@ import { CreatedAtModule } from 'src/app/shared/pipes/created-at/created-at.modu
     DashboardBarModule,
     DashboardListModule,
     FontAwesomeModule,
-    CreatedAtModule
+    CreatedAtModule,
+    MatButtonModule
   ]
 })
 export class SurveySentListModule {}

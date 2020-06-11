@@ -9,7 +9,7 @@ import { TemplateSurvey } from 'src/app/models/survey/surveys/survey-template.mo
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SurveyService } from 'src/app/services/survey.service';
-import { first, switchMap, flatMap } from 'rxjs/operators';
+import { first, flatMap } from 'rxjs/operators';
 import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
 import { DeleteTemplateDialog } from 'src/app/models/dialog/delete-template-dialog.model';
 
@@ -24,12 +24,7 @@ export class SurveyTemplateListComponent implements OnInit, OnDestroy {
   buttonDets = 'Stwórz nowy szablon';
   emptyListInfo = 'Brak szablonów';
 
-  private _surveys = new Subject<TemplateSurvey[]>();
-
-  get surveys(): Observable<TemplateSurvey[]> {
-    return this._surveys.asObservable();
-  }
-  // getAllSurveysSub = new Subscription();
+  _surveys = new Subject<TemplateSurvey[]>();
 
   constructor(
     private surveyService: SurveyService,
@@ -43,14 +38,15 @@ export class SurveyTemplateListComponent implements OnInit, OnDestroy {
 
   redirectToNew(): void {
     this.surveyService.isCreatorLoading(true);
-    const obj = {
-      title: '',
-      questions: []
-    };
-    this.surveyService.createSurvey(obj).subscribe(data => {
-      const string: string = '/app/admin/survey/create/' + data;
-      this.router.navigateByUrl(string);
-    });
+    this.surveyService
+      .createSurvey({
+        title: '',
+        questions: []
+      })
+      .subscribe(data => {
+        const string: string = '/app/admin/survey/create/' + data;
+        this.router.navigateByUrl(string);
+      });
   }
   openCreator(survey: TemplateSurvey): void {
     this.surveyService.isCreatorLoading(true);
@@ -97,5 +93,7 @@ export class SurveyTemplateListComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    this.surveyService.isCreatorLoading(false);
+  }
 }

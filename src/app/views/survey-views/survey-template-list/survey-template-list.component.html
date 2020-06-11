@@ -3,7 +3,7 @@
   [buttonDets]="buttonDets"
   (buttonClick)="redirectToNew()"
 ></app-dashboard-bar>
-<app-dashboard-list [itemArr]="surveys | async" [emptyListInfo]="emptyListInfo">
+<app-dashboard-list [itemArr]="_surveys | async" [emptyListInfo]="emptyListInfo">
   <ng-template let-survey>
     <app-dashboard-tile [itemData]="survey" (tileClick)="openCreator(survey)">
       <div class="title">{{ survey.title }}</div>

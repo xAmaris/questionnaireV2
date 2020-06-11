@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { MainViewComponent } from './main-view.component';
+import { AuthGuard } from 'src/app/auth/guards/guard.auth';
+import { RoleGuard } from 'src/app/auth/guards/role.auth';
 
 const routes: Routes = [
   {
@@ -13,7 +15,12 @@ const routes: Routes = [
         loadChildren: () =>
           import('./../admin-view/admin-view.module').then(
             m => m.AdminViewModule
-          )
+          ),
+        canLoad: [AuthGuard],
+        canActivate: [RoleGuard],
+        data: {
+          expectedRole: 'careerOffice'
+        }
       }
       // {
       //   path: 'student',
