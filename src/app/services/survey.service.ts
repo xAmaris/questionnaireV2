@@ -83,9 +83,8 @@ export class SurveyService {
       this.config.apiUrl + '/survey/' + id + '/' + hash
     );
   }
-  getSurveyReport(id: number): Observable<any> {
-    console.log('zwrotka');
-    return this.http.get<any>(
+  getSurveyReport(id: number): Observable<TemplateSurvey> {
+    return this.http.get<TemplateSurvey>(
       this.config.apiUrl + '/surveyreport/surveyReports/' + id
     );
   }

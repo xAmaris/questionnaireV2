@@ -5,6 +5,7 @@ import { AuthGuard } from 'src/app/auth/guards/guard.auth';
 import { SurveyCreatorResolver } from 'src/app/resolvers/survey-creator.resolver';
 import { ViewformGuard } from 'src/app/auth/guards/viewform.auth';
 import { SurveyViewformResolver } from 'src/app/resolvers/survey-viewform.resolver';
+import { SurveyResultResolver } from 'src/app/resolvers/survey-result.resolver';
 
 const surveyContainerRoutes: Routes = [
   {
@@ -59,7 +60,7 @@ const surveyContainerRoutes: Routes = [
           ),
         canLoad: [AuthGuard],
         resolve: {
-          cres: SurveyCreatorResolver
+          cres: SurveyResultResolver
         }
       }
     ]
@@ -68,7 +69,7 @@ const surveyContainerRoutes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forChild(surveyContainerRoutes)],
-  providers: [ViewformGuard],
+  providers: [ViewformGuard, SurveyResultResolver],
   exports: [RouterModule]
 })
 export class SurveyContainerRoutingModule {}
